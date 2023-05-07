@@ -9,8 +9,8 @@ We only want boards and games that are evaluated.
 We first group them with grep and only afterwards remove the first line, to additionally get rid of all empty lines.
     grep -B 1 -A 1 --no-group-separator '%eval' step1.pgn | sed '1~3d' > step2.pgn
 
-Afterwards we run a python script (refactoring.py).
-This gets rid of any useless characters and saves each board as FEN,eval.
+Afterwards we run a python script (pgn_to_csv.py).
+This gets rid of any useless characters and saves each board as a csv format: FEN,eval.
 
 Then we reduce our file size by getting rid of duplicates.
      sort step3.csv | uniq -u > step4.csv
@@ -22,15 +22,4 @@ The lines are sorted. To make the next steps easier we shuffle this file.
 Because it is too large for memory we used the rust package rhuffle.
     rhuffle --src step4.csv --dst step5.csv
 
-Now we take a portion of this (50 million games), because the next step will drastically increase the space used.
-    head -n 50000000 step5.csv > step6.csv 
-
-Time to prepare the data to be inserted into a nerual network, because the FEN Notation is not good for this.
-We wrote a python script (bitboards.py / board.py) that produces a bitboard for each chess piece type for each color.
-A bitboard contains 64 bits - one for each square - and a bit is 1 if the corresponding piece is on that square.
-In total this will result into 2*6*64 = 768 bits.
-Another approach is to only have one board per piece/in total and represent the different colors/pieces with other numebrs.
-A white pawn would is a 1, a black pawn is a -1, a black knight is a -2, etc. This approch might seem better,
-because it is les sparse, but it has been shown that method 1 is working well for this kind of problem. 
-We also append the additional information from the fen as binary information to the end of the bitboards.
-The fen, binary data, and evaluation are writting into an sqlite database for better indexing in the future.
+With the final python script (csv_to_db.py) we convert the csv file into a sqlite database for faster indexing.
