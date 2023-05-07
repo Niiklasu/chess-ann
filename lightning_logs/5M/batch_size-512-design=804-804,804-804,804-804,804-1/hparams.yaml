@@ -1,0 +1,3 @@
+batch_size: 512
+layer_count: 4
+learning_rate: 0.001
