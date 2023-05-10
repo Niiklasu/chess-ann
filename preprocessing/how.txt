@@ -16,7 +16,7 @@ Then we reduce our file size by getting rid of duplicates.
      sort step3.csv | uniq -u > step4.csv
     
 By now we successfully reduced our initial size of 220GB to 30GB.
-These are still over 440M games. SO no need to worry we run out of traning data.
+These are still over 480M boards. So no need to worry we run out of traning data.
 
 The lines are sorted. To make the next steps easier we shuffle this file.
 Because it is too large for memory we used the rust package rhuffle.

@@ -1,5 +1,6 @@
 import math
 import re
+import bot
 import chess
 import torch
 import pytorch_lightning as pl
@@ -70,6 +71,7 @@ class EvaluationModel(pl.LightningModule):
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.learning_rate)
 
+
 model = EvaluationModel.load_from_checkpoint(checkpoint_path=r'./model.ckpt', map_location="cpu")
 dataset = EvaluationDataset(count=LABEL_COUNT)
 
@@ -80,10 +82,14 @@ def guess_model_loss(idx):
     y_pred = model(x)
     loss = F.l1_loss(y_pred, y)
 
-    if loss > 10:
-       print(batch['fen'])
+    # if loss > 10:
+    #    print(batch['fen'])
     return loss
 
 
 for i in range(1000):
     guess_model_loss(i)
+
+print(bot.evaluate(chess.Board('r1bqk1nr/ppp2ppp/2np4/b7/2B1P3/1QP2N2/P4PPP/RNB2RK1 w - - 0 1')))
+# print(guess_model_loss(8).item(), dataset[8]['eval'], dataset[8]['fen'])
+# print(guess_model_loss(9).item(), dataset[9]['eval'], dataset[9]['fen'])
